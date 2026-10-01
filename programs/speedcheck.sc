@@ -4,6 +4,7 @@
 // /speedcheck list | info <name> | delete <name>
 // /speedcheck test <pos> <name> <on|off> sprint until <pos> switches INTO the given state
 // /speedcheck stop                       abort running test
+// /speedcheck check <from> <to>          verify single-item boxes in area are ideally packed
 
 __config() -> {
     'scope' -> 'global',
@@ -15,6 +16,7 @@ __config() -> {
         'delete <set>' -> 'cmd_delete',
         'test <pos> <set> <state>' -> 'cmd_test',
         'stop' -> 'cmd_stop',
+        'check <from> <to>' -> 'cmd_check',
     },
     'arguments' -> {
         'name' -> {'type' -> 'term', 'suggest' -> ['Test_Set_1']},
@@ -159,4 +161,48 @@ _finish(completed) -> (
     );
     _say(str('  Game time: %d gt | %.2f s | %.2f min | %.4f h', ticks, ticks / 20, ticks / 1200, ticks / 72000));
     _say(str('  Real time: %.2f s', real_s));
+);
+
+// Ideal output: per item, boxes = ceil(total / box capacity) and at most one partial box.
+cmd_check(from, to) -> (
+    boxes = {}; loose = {}; mixed = 0; empty = 0;
+    volume(from, to,
+        data = block_data(_);
+        if (data,
+            for (parse_nbt(data):'Items' || [],
+                if (_:'id' ~ 'shulker_box$',
+                    content = {};
+                    for (_:'components':'minecraft:container' || [], _add(content, _:'item':'id', _:'item':'count' || 1));
+                    ids = keys(content);
+                    if (!ids, empty += 1,
+                        length(ids) > 1, mixed += 1,
+                        id = ids:0; if (!has(boxes, id), boxes:id = []); boxes:id += content:id
+                    ),
+                    _add(loose, _:'id', _:'count' || 1)
+                )
+            )
+        )
+    );
+    if (!boxes && !mixed && !empty, return(_err('No shulker boxes found')));
+    n_boxes = 0; n_ideal = 0; bad = [];
+    for (sort(keys(boxes)),
+        id = _;
+        counts = boxes:id;
+        cap = 27 * stack_limit(id);
+        total = reduce(counts, _a + _, 0);
+        ideal = ceil(total / cap);
+        partials = length(filter(counts, _ < cap));
+        n_boxes += length(counts);
+        n_ideal += ideal;
+        if (length(counts) != ideal || partials > (total % cap != 0),
+            put(bad, null, str('  %s: %d boxes, ideal %d (%d partial)', id, length(counts), ideal, partials))
+        )
+    );
+    ok = !bad && !mixed && !empty;
+    print(str('Output check: %s - %d types, %d boxes, ideal %d', if (ok, 'PASS', 'FAIL'), length(boxes), n_boxes + mixed + empty, n_ideal));
+    for (bad, print(format('r ' + _)));
+    if (mixed, print(format('r   ' + mixed + ' mixed boxes')));
+    if (empty, print(format('r   ' + empty + ' empty boxes')));
+    if (loose, print(format('g   loose items (ignored): ' + join(', ', map(keys(loose), str('%s %d', _, loose:_))))));
+    null
 );

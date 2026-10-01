@@ -4,10 +4,12 @@ A [Scarpet](https://github.com/gnembon/fabric-carpet) app for measuring how fast
 
 ## Info
 
-SpeedCheck does two things:
+SpeedCheck does three things:
 
 - **Counts item sets.** Select an area and it counts every item inside containers (chests, barrels, hoppers, droppers, furnaces, placed shulker boxes...). Shulker boxes are opened and their contents counted, but the boxes themselves are not. Each count is saved under a name, split into 64-stackables, 16-stackables and unstackables.
 - **Times contraptions.** Starts the game with `/tick sprint`, counts game ticks until a redstone signal block of your choice switches into the state you chose, then freezes the game and reports the speed in items/hour and as a multiple of hopper speed (1x = 9000 items/h).
+
+- **Checks output packing.** Scans an area of chests holding single-item shulker boxes and verifies every item uses the minimum number of boxes with at most one partial box, e.g. 3 boxes worth of cobblestone must come out as 3 boxes, not 4.
 
 Timing uses game ticks, so the result doesn't depend on how fast your computer sprints.
 
@@ -31,6 +33,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 - `/speedcheck delete <name>` - Deletes a set
 - `/speedcheck test <pos> <name> <on|off>` - Unfreezes and sprints the game, then ends the test when the block at `<pos>` switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `<name>`
 - `/speedcheck stop` - Aborts the running test and freezes the game
+- `/speedcheck check <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. Mixed and empty boxes count as failures, loose items are listed and ignored
 
 ## Usage
 
@@ -48,6 +51,15 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
      Real time: 412.36 s
    ```
 
+4. Check the output boxes: `/speedcheck check <from> <to>`
+   ```
+   Output check: FAIL - 2 types, 8 boxes, ideal 5
+     cobblestone: 4 boxes, ideal 3 (2 partial)
+     1 mixed boxes
+     1 empty boxes
+     loose items (ignored): stone 5
+   ```
+
 The test only ends on a switch **into** the chosen state. Switching away from it is ignored, so an "is working" signal that starts ON, turns OFF while processing and turns ON again when done works with `on`.
 
 ## Notes
@@ -59,6 +71,9 @@ The test only ends on a switch **into** the chosen state. Switching away from it
 - Only block containers are counted. Minecarts, dropped items and bundle contents are not.
 
 ## Changelog
+
+### V1.1
+- Added `/speedcheck check` to verify ideal output packing
 
 ### V1
 - Initial release
