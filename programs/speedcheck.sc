@@ -2,7 +2,7 @@
 //
 // /speedcheck save <from> <to> <name>    count items in containers in area, store as <name>
 // /speedcheck list | info <name> | delete <name>
-// /speedcheck test <pos> <name> <on|off> sprint until <pos> switches INTO the given state
+// /speedcheck test <pos> <name> <on|off> sprint, time from <pos> in opposite state until it switches INTO the given state
 // /speedcheck stop                       abort running test
 // /speedcheck idealoutput <from> <to>    verify single-item boxes in area are ideally packed
 
@@ -114,17 +114,20 @@ cmd_test(pos, name, state) -> (
     if (!has(global_sets, name), return(_err('Unknown set: ' + name)));
     if (global_sets:name:'total' == 0, return(_err('Set ' + name + ' has 0 items')));
     if (!_tick('unfreeze'), return());
+    target = state == 'on';
+    counting = (power(pos) > 0) != target;
     global_test = {
         'pos' -> pos,
         'dim' -> current_dimension(),
         'set' -> name,
-        'target' -> state == 'on',
-        'prev' -> power(pos) > 0,
+        'target' -> target,
+        'counting' -> counting,
         'ticks' -> 0,
         'start_ms' -> unix_time(),
     };
     _tick('sprint 3650d');
-    _say(str('Test started: %s (%d items), ends when %s turns %s', name, global_sets:name:'total', pos, state));
+    _say(str('Test started: %s (%d items), %s %s turns %s', name, global_sets:name:'total',
+        if (counting, 'timing until', 'timer starts when'), pos, if (counting, state, if (target, 'off', 'on'))));
     null
 );
 
@@ -134,15 +137,20 @@ cmd_stop() -> (
     null
 );
 
-// Ends only on a transition INTO the target state; leaving it (e.g. the initial
-// ON->OFF when the contraption starts working) is ignored.
+// Timer starts when <pos> is in the opposite of the target state, and stops when it switches into the target state.
 __on_tick() -> (
     if (!global_test, return());
-    global_test:'ticks' = global_test:'ticks' + 1;
     t = global_test;
     cur = in_dimension(t:'dim', power(t:'pos') > 0);
-    if (cur == t:'target' && t:'prev' != t:'target', _finish(true));
-    if (global_test, global_test:'prev' = cur);
+    if (!t:'counting',
+        if (cur != t:'target',
+            global_test:'counting' = true;
+            global_test:'start_ms' = unix_time();
+            _say(str('Timer started, ends when %s turns %s', t:'pos', if (t:'target', 'on', 'off')))
+        ),
+        global_test:'ticks' = t:'ticks' + 1;
+        if (cur == t:'target', _finish(true))
+    );
 );
 
 _finish(completed) -> (
