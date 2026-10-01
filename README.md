@@ -53,11 +53,14 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 
 4. Check the output boxes: `/speedcheck check <from> <to>`
    ```
-   Output check: FAIL - 2 types, 8 boxes (3 partial), ideal 5 (1 partial), 50.0%
-     cobblestone: 4 boxes (2 partial), ideal 3 (0 partial), 50.0%
-     1 mixed boxes
-     1 empty boxes
-     loose items (ignored): stone 5
+   Output check: FAIL - 50.0% ideal
+     Boxes: 8 (3 partial), ideal 5 (1 partial), 3 extra
+     Items: 2 types, 1 not ideal
+     Not ideal:
+       cobblestone: 4 boxes (2 partial), ideal 3 (0 partial) - 50.0%
+     Mixed boxes: 1
+     Empty boxes: 1
+     Loose items (ignored): stone 5
    ```
 
 The test only ends on a switch **into** the chosen state. Switching away from it is ignored, so an "is working" signal that starts ON, turns OFF while processing and turns ON again when done works with `on`.

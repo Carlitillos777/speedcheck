@@ -197,15 +197,16 @@ cmd_check(from, to) -> (
         good = min(length(counts) - part, ideal - ideal_part) + min(part, ideal_part);
         n += length(counts); n_part += part; n_ideal += ideal; n_ideal_part += ideal_part; n_ok += good;
         if (good != length(counts) || good != ideal,
-            put(bad, null, str('  %s: %d boxes (%d partial), ideal %d (%d partial), %.1f%%', id, length(counts), part, ideal, ideal_part, 100 * good / length(counts)))
+            put(bad, null, str('    %s: %d boxes (%d partial), ideal %d (%d partial) - %.1f%%', id, length(counts), part, ideal, ideal_part, 100 * good / length(counts)))
         )
     );
     n += mixed + empty;
-    print(str('Output check: %s - %d types, %d boxes (%d partial), ideal %d (%d partial), %.1f%%',
-        if (!bad && !mixed && !empty, 'PASS', 'FAIL'), length(boxes), n, n_part, n_ideal, n_ideal_part, 100 * n_ok / n));
-    for (bad, print(format('r ' + _)));
-    if (mixed, print(format('r   ' + mixed + ' mixed boxes')));
-    if (empty, print(format('r   ' + empty + ' empty boxes')));
-    if (loose, print(format('g   loose items (ignored): ' + join(', ', map(keys(loose), str('%s %d', _, loose:_))))));
+    print(str('Output check: %s - %.1f%% ideal', if (!bad && !mixed && !empty, 'PASS', 'FAIL'), 100 * n_ok / n));
+    print(str('  Boxes: %d (%d partial), ideal %d (%d partial), %d extra', n, n_part, n_ideal, n_ideal_part, n - n_ideal));
+    print(str('  Items: %d types, %d not ideal', length(boxes), length(bad)));
+    if (bad, print('  Not ideal:'); for (bad, print(format('r ' + _))));
+    if (mixed, print(format('r   Mixed boxes: ' + mixed)));
+    if (empty, print(format('r   Empty boxes: ' + empty)));
+    if (loose, print(format('g   Loose items (ignored): ' + join(', ', map(keys(loose), str('%s %d', _, loose:_))))));
     null
 );
