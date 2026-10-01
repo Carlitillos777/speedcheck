@@ -53,7 +53,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 
 4. Check the output boxes: `/speedcheck idealoutput <from> <to>`
    ```
-   Ideal output: FAIL - 1/2 types ideal (50.0%)
+   Ideal output: NO - 1/2 types ideal (50.0%)
      Boxes: 8 (3 partial), ideal 5 (1 partial), 3 extra
      Not ideal:
        cobblestone: 4 boxes (2 partial), ideal 3 (0 partial)

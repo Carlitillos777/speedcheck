@@ -201,7 +201,7 @@ cmd_idealoutput(from, to) -> (
     );
     n += mixed;
     types = length(boxes);
-    print(str('Ideal output: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed, 'PASS', 'FAIL'), types - length(bad), types, 100 * (types - length(bad)) / types));
+    print(str('Ideal output: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed, 'YES', 'NO'), types - length(bad), types, 100 * (types - length(bad)) / types));
     print(str('  Boxes: %d (%d partial), ideal %d (%d partial), %d extra', n, n_part, n_ideal, n_ideal_part, n - n_ideal));
     if (bad, print('  Not ideal:'); for (bad, print(_)));
     if (mixed, print('  Mixed boxes: ' + mixed));
