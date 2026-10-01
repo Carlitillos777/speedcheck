@@ -15,7 +15,7 @@ Timing uses game ticks, so the result doesn't depend on how fast your computer s
 
 Requires Carpet mod. Tested on Minecraft 1.21.4 and 1.21.11.
 
-1. `/carpet scriptsAppStore Carlguzmantrebu/speedcheck/contents/programs`
+1. `/carpet scriptsAppStore Carlitillos777/speedcheck/contents/programs`
 2. `/script download speedcheck.sc`
 3. `/carpet setDefault commandScriptACE 3`
 
