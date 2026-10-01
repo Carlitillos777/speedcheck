@@ -4,7 +4,7 @@
 // /speedcheck list | info <name> | delete <name>
 // /speedcheck test <pos> <name> <on|off> sprint until <pos> switches INTO the given state
 // /speedcheck stop                       abort running test
-// /speedcheck check <from> <to>          verify single-item boxes in area are ideally packed
+// /speedcheck idealoutput <from> <to>    verify single-item boxes in area are ideally packed
 
 __config() -> {
     'scope' -> 'global',
@@ -16,7 +16,7 @@ __config() -> {
         'delete <set>' -> 'cmd_delete',
         'test <pos> <set> <state>' -> 'cmd_test',
         'stop' -> 'cmd_stop',
-        'check <from> <to>' -> 'cmd_check',
+        'idealoutput <from> <to>' -> 'cmd_idealoutput',
     },
     'arguments' -> {
         'name' -> {'type' -> 'term', 'suggest' -> ['Test_Set_1']},
@@ -164,7 +164,7 @@ _finish(completed) -> (
 );
 
 // Ideal output: per item, boxes = ceil(total / box capacity) and at most one partial box.
-cmd_check(from, to) -> (
+cmd_idealoutput(from, to) -> (
     boxes = {}; loose = {}; mixed = 0; empty = 0;
     volume(from, to,
         data = block_data(_);
@@ -201,7 +201,7 @@ cmd_check(from, to) -> (
     );
     n += mixed + empty;
     types = length(boxes);
-    print(str('Output check: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed && !empty, 'PASS', 'FAIL'), types - length(bad), types, 100 * (types - length(bad)) / types));
+    print(str('Ideal output: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed && !empty, 'PASS', 'FAIL'), types - length(bad), types, 100 * (types - length(bad)) / types));
     print(str('  Boxes: %d (%d partial), ideal %d (%d partial), %d extra', n, n_part, n_ideal, n_ideal_part, n - n_ideal));
     if (bad, print('  Not ideal:'); for (bad, print(format('r ' + _))));
     if (mixed, print(format('r   Mixed boxes: ' + mixed)));

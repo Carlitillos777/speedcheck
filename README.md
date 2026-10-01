@@ -33,7 +33,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 - `/speedcheck delete <name>` - Deletes a set
 - `/speedcheck test <pos> <name> <on|off>` - Unfreezes and sprints the game, then ends the test when the block at `<pos>` switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `<name>`
 - `/speedcheck stop` - Aborts the running test and freezes the game
-- `/speedcheck check <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Mixed and empty boxes count as failures, loose items are listed and ignored
+- `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Mixed and empty boxes count as failures, loose items are listed and ignored
 
 ## Usage
 
@@ -51,9 +51,9 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
      Real time: 412.36 s
    ```
 
-4. Check the output boxes: `/speedcheck check <from> <to>`
+4. Check the output boxes: `/speedcheck idealoutput <from> <to>`
    ```
-   Output check: FAIL - 1/2 types ideal (50.0%)
+   Ideal output: FAIL - 1/2 types ideal (50.0%)
      Boxes: 8 (3 partial), ideal 5 (1 partial), 3 extra
      Not ideal:
        cobblestone: 4 boxes (2 partial), ideal 3 (0 partial)
@@ -75,7 +75,7 @@ The test only ends on a switch **into** the chosen state. Switching away from it
 ## Changelog
 
 ### V1.1
-- Added `/speedcheck check` to verify ideal output packing
+- Added `/speedcheck idealoutput` to verify ideal output packing
 
 ### V1
 - Initial release
