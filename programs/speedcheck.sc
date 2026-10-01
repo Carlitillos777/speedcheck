@@ -184,23 +184,25 @@ cmd_check(from, to) -> (
         )
     );
     if (!boxes && !mixed && !empty, return(_err('No shulker boxes found')));
-    n_boxes = 0; n_ideal = 0; bad = [];
+    // percentage = boxes matching the ideal output (full boxes + at most one partial per item) / all boxes
+    n = 0; n_part = 0; n_ideal = 0; n_ideal_part = 0; n_ok = 0; bad = [];
     for (sort(keys(boxes)),
         id = _;
         counts = boxes:id;
         cap = 27 * stack_limit(id);
         total = reduce(counts, _a + _, 0);
-        ideal = ceil(total / cap);
-        partials = length(filter(counts, _ < cap));
-        n_boxes += length(counts);
-        n_ideal += ideal;
-        if (length(counts) != ideal || partials > (total % cap != 0),
-            put(bad, null, str('  %s: %d boxes, ideal %d, %.1f%% (%d partial)', id, length(counts), ideal, 100 * ideal / length(counts), partials))
+        ideal_part = if (total % cap, 1, 0);
+        ideal = floor(total / cap) + ideal_part;
+        part = length(filter(counts, _ < cap));
+        good = min(length(counts) - part, ideal - ideal_part) + min(part, ideal_part);
+        n += length(counts); n_part += part; n_ideal += ideal; n_ideal_part += ideal_part; n_ok += good;
+        if (good != length(counts) || good != ideal,
+            put(bad, null, str('  %s: %d boxes (%d partial), ideal %d (%d partial), %.1f%%', id, length(counts), part, ideal, ideal_part, 100 * good / length(counts)))
         )
     );
-    ok = !bad && !mixed && !empty;
-    n_all = n_boxes + mixed + empty;
-    print(str('Output check: %s - %d types, %d boxes, ideal %d, %.1f%%', if (ok, 'PASS', 'FAIL'), length(boxes), n_all, n_ideal, 100 * n_ideal / n_all));
+    n += mixed + empty;
+    print(str('Output check: %s - %d types, %d boxes (%d partial), ideal %d (%d partial), %.1f%%',
+        if (!bad && !mixed && !empty, 'PASS', 'FAIL'), length(boxes), n, n_part, n_ideal, n_ideal_part, 100 * n_ok / n));
     for (bad, print(format('r ' + _)));
     if (mixed, print(format('r   ' + mixed + ' mixed boxes')));
     if (empty, print(format('r   ' + empty + ' empty boxes')));
