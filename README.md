@@ -43,7 +43,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 3. Start the test, pointing at the block that powers when the contraption is done: `/speedcheck test <x y z> Test_Set_1 on`
    ```
    Test_Set_1 finished
-     Speed: 64745 items/h (7.19x hopper)
+     Speed: 64745 items/h | 1079 items/min (7.19x hopper)
      Items: 93312
      Game time: 103768 gt | 5188.40 s | 1.4412 h
      Real time: 412.36 s

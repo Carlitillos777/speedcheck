@@ -153,7 +153,7 @@ _finish(completed) -> (
     if (completed,
         total = global_sets:(t:'set'):'total';
         rate = total * 72000 / max(ticks, 1);
-        _say(str('  Speed: %.0f items/h (%.2fx hopper)', rate, rate / 9000));
+        _say(str('  Speed: %.0f items/h | %.0f items/min (%.2fx hopper)', rate, rate / 60, rate / 9000));
         _say(str('  Items: %d', total))
     );
     _say(str('  Game time: %d gt | %.2f s | %.4f h', ticks, ticks / 20, ticks / 72000));
