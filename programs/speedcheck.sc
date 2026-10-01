@@ -183,7 +183,7 @@ cmd_idealoutput(from, to) -> (
             )
         )
     );
-    if (!boxes && !mixed && !empty, return(_err('No shulker boxes found')));
+    if (!boxes, return(_err('No single-item shulker boxes found')));
     // ideal per item type: ceil(total / cap) boxes, at most one partial. percentage = ideal types / all types
     n = 0; n_part = 0; n_ideal = 0; n_ideal_part = 0; bad = [];
     for (sort(keys(boxes)),
@@ -199,13 +199,13 @@ cmd_idealoutput(from, to) -> (
             put(bad, null, str('    %s: %d boxes (%d partial), ideal %d (%d partial)', id, length(counts), part, ideal, ideal_part))
         )
     );
-    n += mixed + empty;
+    n += mixed;
     types = length(boxes);
-    print(str('Ideal output: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed && !empty, 'PASS', 'FAIL'), types - length(bad), types, 100 * (types - length(bad)) / types));
+    print(str('Ideal output: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed, 'PASS', 'FAIL'), types - length(bad), types, 100 * (types - length(bad)) / types));
     print(str('  Boxes: %d (%d partial), ideal %d (%d partial), %d extra', n, n_part, n_ideal, n_ideal_part, n - n_ideal));
     if (bad, print('  Not ideal:'); for (bad, print(_)));
     if (mixed, print('  Mixed boxes: ' + mixed));
-    if (empty, print('  Empty boxes: ' + empty));
+    if (empty, print(format('g   Empty boxes (ignored): ' + empty)));
     if (loose, print(format('g   Loose items (ignored): ' + join(', ', map(keys(loose), str('%s %d', _, loose:_))))));
     null
 );

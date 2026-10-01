@@ -33,7 +33,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 - `/speedcheck delete <name>` - Deletes a set
 - `/speedcheck test <pos> <name> <on|off>` - Unfreezes and sprints the game, then ends the test when the block at `<pos>` switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `<name>`
 - `/speedcheck stop` - Aborts the running test and freezes the game
-- `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Mixed and empty boxes count as failures, loose items are listed and ignored
+- `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Mixed boxes count as failures, empty boxes and loose items are listed and ignored
 
 ## Usage
 
@@ -58,7 +58,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
      Not ideal:
        cobblestone: 4 boxes (2 partial), ideal 3 (0 partial)
      Mixed boxes: 1
-     Empty boxes: 1
+     Empty boxes (ignored): 1
      Loose items (ignored): stone 5
    ```
 
