@@ -61,9 +61,7 @@ _count_area(from, to) -> (
 );
 
 _print_set(name, set) -> (
-    items = set:'items';
-    print(str('%s: %d items (64x: %d | 16x: %d | 1x: %d)', name, set:'total', set:'s64', set:'s16', set:'s1'));
-    print(format('g   ' + join(', ', map(sort_key(keys(items), -items:_), str('%s %d', _, items:_)))));
+    print(str('%s: %d items, %d types (64x: %d | 16x: %d | 1x: %d)', name, set:'total', length(set:'items'), set:'s64', set:'s16', set:'s1'));
 );
 
 _err(msg) -> (print(format('r ' + msg)); null);
@@ -94,7 +92,10 @@ cmd_list() -> (
 
 cmd_info(name) -> (
     if (!has(global_sets, name), return(_err('Unknown set: ' + name)));
-    _print_set(name, global_sets:name);
+    set = global_sets:name;
+    items = set:'items';
+    _print_set(name, set);
+    print(format('g   ' + join(', ', map(sort_key(keys(items), -items:_), str('%s %d', _, items:_)))));
     null
 );
 

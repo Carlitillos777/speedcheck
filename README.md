@@ -27,7 +27,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 
 - `/speedcheck save <from> <to> <name>` - Counts the items in containers between `<from>` and `<to>` and saves the count as `<name>`
 - `/speedcheck list` - Lists the saved sets and their totals
-- `/speedcheck info <name>` - Shows the full breakdown of a set
+- `/speedcheck info <name>` - Shows a set's totals and the count of every item in it
 - `/speedcheck delete <name>` - Deletes a set
 - `/speedcheck test <pos> <name> <on|off>` - Unfreezes and sprints the game, then ends the test when the block at `<pos>` switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `<name>`
 - `/speedcheck stop` - Aborts the running test and freezes the game
@@ -37,8 +37,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 1. Fill the input of your contraption, e.g. a double chest of shulker boxes, and freeze the game with `/tick freeze`.
 2. Save the input: `/speedcheck save ~ ~ ~ ~1 ~ ~ Test_Set_1`
    ```
-   Test_Set_1: 93312 items (64x: 93312 | 16x: 0 | 1x: 0)
-     dirt 93312
+   Test_Set_1: 93312 items, 1 types (64x: 93312 | 16x: 0 | 1x: 0)
    ```
 3. Start the test, pointing at the block that powers when the contraption is done: `/speedcheck test <x y z> Test_Set_1 on`
    ```
