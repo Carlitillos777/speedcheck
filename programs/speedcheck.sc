@@ -184,8 +184,8 @@ cmd_check(from, to) -> (
         )
     );
     if (!boxes && !mixed && !empty, return(_err('No shulker boxes found')));
-    // percentage = boxes matching the ideal output (full boxes + at most one partial per item) / all boxes
-    n = 0; n_part = 0; n_ideal = 0; n_ideal_part = 0; n_ok = 0; bad = [];
+    // ideal per item type: ceil(total / cap) boxes, at most one partial. percentage = ideal types / all types
+    n = 0; n_part = 0; n_ideal = 0; n_ideal_part = 0; bad = [];
     for (sort(keys(boxes)),
         id = _;
         counts = boxes:id;
@@ -194,16 +194,15 @@ cmd_check(from, to) -> (
         ideal_part = if (total % cap, 1, 0);
         ideal = floor(total / cap) + ideal_part;
         part = length(filter(counts, _ < cap));
-        good = min(length(counts) - part, ideal - ideal_part) + min(part, ideal_part);
-        n += length(counts); n_part += part; n_ideal += ideal; n_ideal_part += ideal_part; n_ok += good;
-        if (good != length(counts) || good != ideal,
-            put(bad, null, str('    %s: %d boxes (%d partial), ideal %d (%d partial) - %.1f%%', id, length(counts), part, ideal, ideal_part, 100 * good / length(counts)))
+        n += length(counts); n_part += part; n_ideal += ideal; n_ideal_part += ideal_part;
+        if (length(counts) != ideal || part > ideal_part,
+            put(bad, null, str('    %s: %d boxes (%d partial), ideal %d (%d partial)', id, length(counts), part, ideal, ideal_part))
         )
     );
     n += mixed + empty;
-    print(str('Output check: %s - %.1f%% ideal', if (!bad && !mixed && !empty, 'PASS', 'FAIL'), 100 * n_ok / n));
+    types = length(boxes);
+    print(str('Output check: %s - %d/%d types ideal (%.1f%%)', if (!bad && !mixed && !empty, 'PASS', 'FAIL'), types - length(bad), types, 100 * (types - length(bad)) / types));
     print(str('  Boxes: %d (%d partial), ideal %d (%d partial), %d extra', n, n_part, n_ideal, n_ideal_part, n - n_ideal));
-    print(str('  Items: %d types, %d not ideal', length(boxes), length(bad)));
     if (bad, print('  Not ideal:'); for (bad, print(format('r ' + _))));
     if (mixed, print(format('r   Mixed boxes: ' + mixed)));
     if (empty, print(format('r   Empty boxes: ' + empty)));
