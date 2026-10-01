@@ -195,11 +195,12 @@ cmd_check(from, to) -> (
         n_boxes += length(counts);
         n_ideal += ideal;
         if (length(counts) != ideal || partials > (total % cap != 0),
-            put(bad, null, str('  %s: %d boxes, ideal %d (%d partial)', id, length(counts), ideal, partials))
+            put(bad, null, str('  %s: %d boxes, ideal %d, %.1f%% (%d partial)', id, length(counts), ideal, 100 * ideal / length(counts), partials))
         )
     );
     ok = !bad && !mixed && !empty;
-    print(str('Output check: %s - %d types, %d boxes, ideal %d', if (ok, 'PASS', 'FAIL'), length(boxes), n_boxes + mixed + empty, n_ideal));
+    n_all = n_boxes + mixed + empty;
+    print(str('Output check: %s - %d types, %d boxes, ideal %d, %.1f%%', if (ok, 'PASS', 'FAIL'), length(boxes), n_all, n_ideal, 100 * n_ideal / n_all));
     for (bad, print(format('r ' + _)));
     if (mixed, print(format('r   ' + mixed + ' mixed boxes')));
     if (empty, print(format('r   ' + empty + ' empty boxes')));
