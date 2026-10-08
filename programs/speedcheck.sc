@@ -171,6 +171,16 @@ _finish(completed) -> (
     _say(str('  Real time: %.2f s', real_s));
 );
 
+// Item key: id, plus custom name and other components, since filters treat those as different items.
+_key(item) -> (
+    c = copy(item:'components') || {};
+    key = replace(item:'id', 'minecraft:', '');
+    name = c:'minecraft:custom_name';
+    if (name, delete(c, 'minecraft:custom_name'); key += ' \'' + replace(name, '^"|"$', '') + '\'');
+    if (c, key += ' ' + encode_json(c));
+    key
+);
+
 // Ideal output: per item, boxes = ceil(total / box capacity) and at most one partial box.
 cmd_idealoutput(from, to) -> (
     boxes = {}; loose = {}; mixed = 0; empty = 0;
@@ -180,7 +190,7 @@ cmd_idealoutput(from, to) -> (
             for (parse_nbt(data):'Items' || [],
                 if (_:'id' ~ 'shulker_box$',
                     content = {};
-                    for (_:'components':'minecraft:container' || [], _add(content, _:'item':'id', _:'item':'count' || 1));
+                    for (_:'components':'minecraft:container' || [], k = _key(_:'item'); content:k = (content:k || 0) + (_:'item':'count' || 1));
                     ids = keys(content);
                     if (!ids, empty += 1,
                         length(ids) > 1, mixed += 1,
@@ -197,7 +207,7 @@ cmd_idealoutput(from, to) -> (
     for (sort(keys(boxes)),
         id = _;
         counts = boxes:id;
-        cap = 27 * stack_limit(id);
+        cap = 27 * stack_limit(split(' ', id):0);
         total = reduce(counts, _a + _, 0);
         ideal_part = if (total % cap, 1, 0);
         ideal = floor(total / cap) + ideal_part;

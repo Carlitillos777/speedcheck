@@ -33,7 +33,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 - `/speedcheck delete <name>` - Deletes a set
 - `/speedcheck test <pos> <name> <on|off>` - Unfreezes and sprints the game. The timer runs while the block at `<pos>` is in the opposite state and stops when it switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `<name>`
 - `/speedcheck stop` - Aborts the running test and freezes the game
-- `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Mixed boxes count as failures, empty boxes and loose items are listed and ignored
+- `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Renamed items or items with other data (enchantments, damage...) count as separate types, like in item filters. Mixed boxes count as failures, empty boxes and loose items are listed and ignored
 
 ## Usage
 
