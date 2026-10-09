@@ -2,7 +2,8 @@
 //
 // /speedcheck save <from> <to> <name>    count items in containers in area, store as <name>
 // /speedcheck list | info <name> | delete <name>
-// /speedcheck test <pos> <name> <on|off> sprint, time from <pos> in opposite state until it switches INTO the given state
+// /speedcheck test <pos> <on|off> [name] sprint, time from <pos> in opposite state until it switches INTO the given state
+//                                        without a set only the time is reported
 // /speedcheck stop                       abort running test
 // /speedcheck idealoutput <from> <to>    verify single-item boxes in area are ideally packed
 
@@ -14,7 +15,8 @@ __config() -> {
         'list' -> 'cmd_list',
         'info <set>' -> 'cmd_info',
         'delete <set>' -> 'cmd_delete',
-        'test <pos> <set> <state>' -> 'cmd_test',
+        'test <pos> <state>' -> _(pos, state) -> cmd_test(pos, state, null),
+        'test <pos> <state> <set>' -> 'cmd_test',
         'stop' -> 'cmd_stop',
         'idealoutput <from> <to>' -> 'cmd_idealoutput',
     },
@@ -109,10 +111,10 @@ cmd_delete(name) -> (
     null
 );
 
-cmd_test(pos, name, state) -> (
+cmd_test(pos, state, name) -> (
     if (global_test, return(_err('A test is already running, use /speedcheck stop')));
-    if (!has(global_sets, name), return(_err('Unknown set: ' + name)));
-    if (global_sets:name:'total' == 0, return(_err('Set ' + name + ' has 0 items')));
+    if (name && !has(global_sets, name), return(_err('Unknown set: ' + name)));
+    if (name && global_sets:name:'total' == 0, return(_err('Set ' + name + ' has 0 items')));
     if (!_tick('unfreeze'), return());
     target = state == 'on';
     counting = (power(pos) > 0) != target;
@@ -126,7 +128,7 @@ cmd_test(pos, name, state) -> (
         'start_ms' -> unix_time(),
     };
     _tick('sprint 3650d');
-    _say(str('Test started: %s (%d items), %s %s turns %s', name, global_sets:name:'total',
+    _say(str('Test started%s, %s %s turns %s', if (name, str(': %s (%d items)', name, global_sets:name:'total'), ''),
         if (counting, 'timing until', 'timer starts when'), pos, if (counting, state, if (target, 'off', 'on'))));
     null
 );
@@ -160,8 +162,8 @@ _finish(completed) -> (
     _tick('freeze');
     ticks = t:'ticks';
     real_s = (unix_time() - t:'start_ms') / 1000;
-    _say(t:'set' + if (completed, ' finished', ' aborted'));
-    if (completed,
+    _say(if (t:'set', t:'set' + ' ', 'Test ') + if (completed, 'finished', 'aborted'));
+    if (completed && t:'set',
         total = global_sets:(t:'set'):'total';
         rate = total * 72000 / max(ticks, 1);
         _say(str('  Speed: %.0f items/h (%.2fx hopper)', rate, rate / 9000));

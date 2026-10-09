@@ -31,7 +31,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 - `/speedcheck list` - Lists the saved sets and their totals
 - `/speedcheck info <name>` - Shows a set's totals and the count of every item in it
 - `/speedcheck delete <name>` - Deletes a set
-- `/speedcheck test <pos> <name> <on|off>` - Unfreezes and sprints the game. The timer runs while the block at `<pos>` is in the opposite state and stops when it switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `<name>`
+- `/speedcheck test <pos> <on|off> [name]` - Unfreezes and sprints the game. The timer runs while the block at `<pos>` is in the opposite state and stops when it switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `[name]`. Without a set only the time is reported
 - `/speedcheck stop` - Aborts the running test and freezes the game
 - `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Renamed items or items with other data (enchantments, damage...) count as separate types, like in item filters. Mixed boxes count as failures, empty boxes and loose items are listed and ignored
 
@@ -42,7 +42,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
    ```
    Test_Set_1: 93312 items, 1 types (64x: 93312 | 16x: 0 | 1x: 0)
    ```
-3. Start the test, pointing at the block that powers when the contraption is done: `/speedcheck test <x y z> Test_Set_1 on`
+3. Start the test, pointing at the block that powers when the contraption is done: `/speedcheck test <x y z> on Test_Set_1`
    ```
    Test_Set_1 finished
      Speed: 64745 items/h (7.19x hopper)
