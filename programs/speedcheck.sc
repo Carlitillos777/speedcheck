@@ -2,8 +2,8 @@
 //
 // /speedcheck save <from> <to> <name>    count items in containers in area, store as <name>
 // /speedcheck list | info <name> | delete <name>
-// /speedcheck test <pos> <on|off> [name] sprint, time from <pos> in opposite state until it switches INTO the given state
-//                                        without a set only the time is reported
+// /speedcheck test <pos> <on|off> [name] [note]  sprint, time from <pos> in opposite state until it switches INTO the given state
+//                                        without a set only the time is reported, note is appended to the result
 // /speedcheck stop                       abort running test
 // /speedcheck idealoutput <from> <to>    verify single-item boxes in area are ideally packed
 
@@ -15,8 +15,9 @@ __config() -> {
         'list' -> 'cmd_list',
         'info <set>' -> 'cmd_info',
         'delete <set>' -> 'cmd_delete',
-        'test <pos> <state>' -> _(pos, state) -> cmd_test(pos, state, null),
-        'test <pos> <state> <set>' -> 'cmd_test',
+        'test <pos> <state>' -> _(pos, state) -> cmd_test(pos, state, null, null),
+        'test <pos> <state> <set>' -> _(pos, state, set) -> cmd_test(pos, state, set, null),
+        'test <pos> <state> <set> <note>' -> 'cmd_test',
         'stop' -> 'cmd_stop',
         'idealoutput <from> <to>' -> 'cmd_idealoutput',
     },
@@ -27,6 +28,7 @@ __config() -> {
         'to' -> {'type' -> 'pos', 'loaded' -> true},
         'pos' -> {'type' -> 'pos', 'loaded' -> true},
         'state' -> {'type' -> 'term', 'options' -> ['on', 'off']},
+        'note' -> {'type' -> 'text', 'suggest' -> []},
     },
 };
 
@@ -111,7 +113,7 @@ cmd_delete(name) -> (
     null
 );
 
-cmd_test(pos, state, name) -> (
+cmd_test(pos, state, name, note) -> (
     if (global_test, return(_err('A test is already running, use /speedcheck stop')));
     if (name && !has(global_sets, name), return(_err('Unknown set: ' + name)));
     if (name && global_sets:name:'total' == 0, return(_err('Set ' + name + ' has 0 items')));
@@ -122,6 +124,7 @@ cmd_test(pos, state, name) -> (
         'pos' -> pos,
         'dim' -> current_dimension(),
         'set' -> name,
+        'note' -> note,
         'target' -> target,
         'counting' -> counting,
         'ticks' -> 0,
@@ -162,7 +165,7 @@ _finish(completed) -> (
     _tick('freeze');
     ticks = t:'ticks';
     real_s = (unix_time() - t:'start_ms') / 1000;
-    _say(if (t:'set', t:'set' + ' ', 'Test ') + if (completed, 'finished', 'aborted'));
+    _say(if (t:'set', t:'set' + ' ', 'Test ') + if (completed, 'finished', 'aborted') + if (t:'note', ' - ' + t:'note', ''));
     if (completed && t:'set',
         total = global_sets:(t:'set'):'total';
         rate = total * 72000 / max(ticks, 1);

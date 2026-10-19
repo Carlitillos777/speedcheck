@@ -31,7 +31,7 @@ You can also download [`programs/speedcheck.sc`](programs/speedcheck.sc) and pla
 - `/speedcheck list` - Lists the saved sets and their totals
 - `/speedcheck info <name>` - Shows a set's totals and the count of every item in it
 - `/speedcheck delete <name>` - Deletes a set
-- `/speedcheck test <pos> <on|off> [name]` - Unfreezes and sprints the game. The timer runs while the block at `<pos>` is in the opposite state and stops when it switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `[name]`. Without a set only the time is reported
+- `/speedcheck test <pos> <on|off> [name] [note]` - Unfreezes and sprints the game. The timer runs while the block at `<pos>` is in the opposite state and stops when it switches into `on` (powered) or `off` (unpowered). Speed is calculated using the item total of set `[name]`. Without a set only the time is reported. `[note]` is free text (e.g. `6 slices`) shown after "finished" to label the test, it needs a set
 - `/speedcheck stop` - Aborts the running test and freezes the game
 - `/speedcheck idealoutput <from> <to>` - Checks that the shulker boxes in containers between `<from>` and `<to>` are ideally packed: per item, boxes = ceil(total / box capacity) and at most one partial box. The percentage is the share of item types with ideal output. Renamed items or items with other data (enchantments, damage...) count as separate types, like in item filters. Mixed boxes count as failures, empty boxes and loose items are listed and ignored
 
@@ -73,6 +73,9 @@ The timer only counts while the contraption is working. With `on`, a signal that
 - Only block containers are counted. Minecarts, dropped items and bundle contents are not.
 
 ## Changelog
+
+### V1.2
+- Added optional `[note]` to `/speedcheck test` to label results
 
 ### V1.1
 - Added `/speedcheck idealoutput` to verify ideal output packing
